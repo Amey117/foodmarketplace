@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="main-section">
+        {% include 'includes/cover.html' %}
+        <div class="page-section account-header buyer-logged-in">
+                <div class="container">
+                        <div class="row">
+                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                        <!-- load the side bar here -->
+                                        {% include 'includes/v_sidebar.html' %}
+                                </div>
+                                <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                                        <div class="user-dashboard loader-holder">
+                                                <div class="user-holder">
+                                                        <h2>Build your food Menu</h2><br>
+                                                       
+                                                        <button class="btn btn-secondary" onclick="history.back()">back </button><br><br>
+                                                        <hr>
+                                                        <h6>Edit food</h6><br>
+                                                        <form action="{% url 'edit_food' food_instance.id %}" method="post" enctype="multipart/form-data">
+                                                            {% csrf_token %}
+                                                            <div class="form-fields-set">
+                                                                <div class="row">
+                                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                                        <div class="field-holder">
+                                                                            <label>Name * </label>
+                                                                            {{food_form.food_title}}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                                        <div class="field-holder">
+                                                                            <label>Food Description</label>
+                                                                            {{food_form.description}}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                                        <div class="field-holder">
+                                                                            <label>Food Category</label>
+                                                                            {{food_form.category}}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-lg-6 col-md-6 col-sm-12">
+                                                                        <div class="field-holder">
+                                                                            <label>Price</label>
+                                                                            {{food_form.price}}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-lg-6 col-md-6 col-sm-12">
+                                                                        <label>Picture</label>
+                                                                        <div class="img-holder">
+                                                                            <ul class="foodbakery-gallery-holder">
+                                                                                    <li class="gal-img">
+                                                                                            <div class="drag-list">
+                                                                                                    <div class="item-thumb">
+                                                                                                            <img style="height: 200px;margin-left: 20px;" class="thumbnail" src="{{food_instance.food_image.url}}" alt="">
+                                                                                                    </div>
+                                                                                            </div>
+                                                                                    </li>
+                                                                            </ul>
+                                                                        </div><br>
+                                                                        <div class="field-holder">
+                                                                            {{food_form.food_image}}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                                        <div class="field-holder">
+                                                                            <label>Availability</label>
+                                                                            {{food_form.is_available}}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            {% for field in food_form %}
+                                                                {% if field.errors %}
+                                                                    {% for error in field.errors%}
+                                                                        <li style="color: red;">{{error}}</li>
+                                                                    {% endfor %}
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                            <button class="btn btn-primary" type="submit" >Create</button>
+                                                        </form>
+                                                </div>
+                                        </div>
+                                </div>
+                        </div>
+                </div>
+        </div>
+</div>
+{% include 'includes/alerts.html' %}
+{% endblock %}

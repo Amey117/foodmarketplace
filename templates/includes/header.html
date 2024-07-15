@@ -1,0 +1,55 @@
+<!-- Header Start -->
+{% load static %}
+<header id="header">
+    <div class="main-header">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                    <div class="logo">
+                        <figure>
+                            <a href="{% url 'index' %}" class="light-logo">
+                                <img width="200px" src="{% static 'logo/foodOnlineLogo.png'  %}" alt="FoodOnline">
+                            </a>
+                        </figure>
+                    </div>
+                
+                    <div class="main-location">
+                        <ul>
+                            <li class="location-has-children choose-location">
+                                <form action="#">
+                                    <input type="text" value="" name="location" placeholder="Enter your delivery location" autocomplete="off">
+                                    <span id="foodbakery_radius_location_open" class="foodbakery-radius-location"><i class="icon-target5"></i></span>
+                                </form>
+                                
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                    <div class="login-option">
+                       
+                        <a class="btn btn-outline-danger text-uppercase font-weight-bold" href="{% url 'market_place' %}">Market Place</a>
+                        {% if user.is_authenticated %}
+                        &nbsp;
+                        <a href="{% url 'cart' %}">
+                            <i class="fa fa-shopping-cart text-danger" style="font-size: 20px;"></i>
+                            <span class="badge badge-warning " style="font-size: 20px;" id="cart-counter" style="border-radius: 50px;">{{cart_count}}</span>
+                        </a>
+                        <a class="cs-color cs-popup-joinus-btn login-popup" data-target="#sign-in" href="{% url 'my_account' %}">My Account</a>
+                        <a class="cs-color cs-popup-joinus-btn login-popup text-danger" data-target="#sign-in" href="{% url 'logout' %}">Logout</a>
+                        {% else %}
+                        <a class="cs-color cs-popup-joinus-btn login-popup" data-target="#sign-in" href="{% url 'login' %}">Login /</a>
+                        <span><a class="cs-color cs-popup-joinus-btn login-popup ml-0" href="{% url 'register_user' %}">Register</a></span>
+                        
+                        
+                        <a class="get-start-btn" href="{% url 'register_vendor' %}">
+                            Register
+                            Restaurant </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- Header End -->

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="main-section">
+        {% include 'includes/cover.html' %}
+        <div class="page-section account-header buyer-logged-in">
+                <div class="container">
+                        <div class="row">
+                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                        <!-- load the side bar here -->
+                                        {% include 'includes/v_sidebar.html' %}
+                                </div>
+                                <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                                        <div class="user-dashboard loader-holder">
+                                                <div class="user-holder">
+                                                        <h2>Build your food Menu</h2><br>
+                                                        <a href="{% url 'menu_builder'  %}" class="btn btn-secondary" >back</a>
+                                                        <hr>
+                                                        <h6>Add Categories</h6><br>
+                                                        <form action="{% url 'add_category' %}" method="post">
+                                                            {% csrf_token %}
+                                                            <div class="form-fields-set">
+                                                                <div class="row">
+                                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                                        <div class="field-holder">
+                                                                            <label>Category Name * </label>
+                                                                            {{cat_form.category_name}}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                                                        <div class="field-holder">
+                                                                            <label>Category Description</label>
+                                                                            {{cat_form.description}}
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            {% for field in cat_form %}
+                                                                {% if field.errors %}
+                                                                    {% for error in field.errors%}
+                                                                        <li style="color: red;">{{error}}</li>
+                                                                    {% endfor %}
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                            <button class="btn btn-primary" type="submit" >Create</button>
+                                                        </form>
+                                                </div>
+                                        </div>
+                                </div>
+                        </div>
+                </div>
+        </div>
+</div>
+{% include 'includes/alerts.html' %}
+{% endblock %}

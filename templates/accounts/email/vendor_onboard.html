@@ -1,0 +1,37 @@
+<table style="border: 1px solid black;padding: .5rem;width: fit-content;">
+
+    <tr>
+        <th>
+            Restaurant Name
+        </th>
+        <th>
+            On board status
+        </th>
+    </tr>
+
+    <tr>
+
+        <td>
+            {{vendor.vendor_name}}
+        </td>
+
+        <td>
+            {% if vendor.is_approved %} <span style="color: green;">Accepted</span> {% else %} <span
+                style="color: red;">Rejected</span> {% endif %}
+        </td>
+
+    </tr>
+    <tr>
+        <br><br>
+    </tr>
+    <tr>
+        <td>
+            Hello your on boarding request on FoodOnline is {% if vendor.is_approved %} <span
+                style="color: green;">Accepted</span> {% else %} <span style="color: red;">Rejected</span> {% endif %}
+        </td>
+        <td>
+            Comment by our Admin - <b>{{comment}}</b>
+        </td>
+    </tr>
+
+</table>

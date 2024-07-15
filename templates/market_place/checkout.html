@@ -1,0 +1,166 @@
+
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="main-section pt-5">
+    
+    <div class="page-section">
+        <div class="container">
+            <div class="row">
+               
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                    <div class="tabs-holder horizontal">
+                        <ul class="stickynav-tabs nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#home"><i class="fa fa-shopping-cart text-danger"></i>Billing Address</a></li>
+                            
+                        </ul>
+                        <div class="tab-content mt-2">
+                            <div id="home" class="tab-pane in active">
+                                <div class="menu-itam-holder">
+                                    <form action="{% url 'place_order' %}" method="POST">
+                                        {% csrf_token %}
+                                        <div class="row">
+                                            <div class="form-group col-md-6 col-sm-12 col-lg-6">
+                                                First Name : {{order_form.first_name}}
+                                            </div>
+                                            <div class="form-group col-md-6 col-sm-12 col-lg-6">
+                                                Last Name : {{order_form.last_name}}
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group col-md-6 col-sm-12 col-lg-6">
+                                                Phone Number : {{order_form.phone}}
+                                            </div>
+                                            <div class="form-group col-md-6 col-sm-12 col-lg-6">
+                                                Email : {{order_form.email}}
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group col-md-12 col-sm-12 col-lg-12">
+                                                Address : {{order_form.address}}
+                                            </div>
+                
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group col-md-6 col-sm-12 col-lg-6">
+                                                Country : {{order_form.country}}
+                                            </div>
+                                            <div class="form-group col-md-6 col-sm-12 col-lg-6">
+                                                State : {{order_form.state}}
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group col-md-6 col-sm-12 col-lg-6">
+                                                City : {{order_form.city}}
+                                            </div>
+                                            <div class="form-group col-md-6 col-sm-12 col-lg-6">
+                                                Pincode : {{order_form.pin_code}}
+                                            </div>
+                                        </div>
+                                </div>
+                            </div>  
+                        </div>
+                    </div>
+                </div>
+
+                <!-- your order section -->
+
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                    <div class="tabs-holder horizontal">
+                        <ul class="stickynav-tabs nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#home"><i class="icon- icon-room_service"></i>Your Order</a></li>
+                            
+                        </ul>
+                        <div class="tab-content">
+                            <div id="home" class="tab-pane in active">
+                                <div class="menu-itam-holder">
+                                    
+
+                                        <div id="menu-item-list-6272" class="menu-itam-list">
+                                            
+                                            <ul>
+                                                {% for cart_item in cart_items %}
+                                                <li id="cart-item-{{cart_item.id}}">
+                                                    <div class="image-holder"><img src="{{cart_item.fooditem.food_image.url}}" alt=""></div>
+                                                    <div class="text-holder">
+                                                        <h6>{{cart_item.fooditem.food_title}}</h6>
+                                                        <span>{{cart_item.fooditem.description}}</span>
+                                                        <a href="{% url 'vendor_details' cart_item.fooditem.vendor.vendor_slug %}"  class="badge badge-warning" style="cursor: pointer;" >{{cart_item.fooditem.vendor}}</a>
+                                                    </div>
+                                                    
+                                                    <div class="price-holder">
+                                                        <span class="price" style="font-size: small;">{{cart_item.quantity}} QTY</span> &nbsp;&nbsp;
+                                                        <span class="price">RS {{cart_item.fooditem.price}}</span>
+                    
+                                                    </div>
+                                                </li>
+                                                {% endfor %}
+                                      
+                                            </ul>
+    
+                                            
+                                            
+                                        </div>
+    
+                                        {% for item in cart_items %}
+                                            <span id="qty-{{item.fooditem.id}}" class="item-qty d-none" data-qty="{{item.quantity}}" ></span>
+                                        {% endfor %}
+                                        <ul>
+                                            <li style="list-style-type: none;" >
+                                                Subtotal
+                                                <span class="price float-right" >
+                                                    <span id="subtotal">{{sub_total}}</span> RS
+                                                </span>
+                                                
+                                            </li>
+                                            {% if taxes_list|length %}
+                                                {% for taxes in taxes_list %}
+                                                    <li style="list-style-type: none;" >
+                                                            {{taxes.type}}<small>({{taxes.per}}%)</small>
+                                                            <span class="price float-right" style="margin-left: 40px;">
+                                                                <span id="tax-{{taxes.type}}">{{taxes.tax_amount}}</span> RS
+                                                            </span><br>
+                                                    </li>
+                                                {% endfor %}
+                                            {% endif %}
+                                            <li style="list-style-type: none; font-weight: 600;" >
+                                                Total
+                                                <span class="price float-right" >
+                                                    <span id="total" >{{grand_total}}</span> RS
+                                                </span>
+                                                
+                                            </li>
+                                                                        
+                                        </ul>
+    
+                                        <h5>SELECT PAYMENT METHOD</h5>
+                                        <div class="payment-method">
+                                            <label>
+                                                <input type="radio" name="payment_method" value="PayPal">
+                                                <img src="{% static 'images/PayPal.png' %}" width="100">
+                                            </label>&nbsp;&nbsp;
+                                            <label>
+                                                <input type="radio" name="payment_method" value="RazorPay">
+                                                <img src="{% static 'images/razorpay_logo.png' %}" width="100">
+                                            </label>
+                                        </div>
+                                    <!-- end the form  -->
+                                     <button type="submit" class="btn btn-danger w-100 p-2 mt-2">PLACE ORDER</button>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

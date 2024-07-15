@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="main-section">
+    <div class="page-section restaurant-detail-image-section" style="background:{% if vendor.user_profile.cover_photo %} url({{vendor.user_profile.cover_photo.url}}) {% else %} {% static 'images/default-cover.PNG' %} {% endif %} no-repeat scroll 0 0 / cover;">
+        <!-- Container Start -->
+        <div class="container">
+            <!-- Row Start -->
+            <div class="row">
+                <!-- Column Start -->
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <div class="company-info-detail">
+                        <div class="company-info">
+                            <div class="img-holder">
+                                <figure>
+                                    <img src="{% if vendor.user_profile.profile_picture %}{{vendor.user_profile.profile_picture.url}} {% else %} {% static 'images/default-profile.PNG' %} {% endif %}" alt="">
+                                </figure>
+                            </div>
+                            <div class="text-holder">
+                                <span class="restaurant-title">{{vendor.vendor_name}} {% if not vendor.is_open %} &nbsp; Closed{% else %} &nbsp; Open {% endif %}</span>
+                                <div class="text">
+                                    <i class="icon-local_pizza"></i>
+                                    <p>{{vendor.user_profile.city}}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if opening_hrs %}
+
+                        <div class="delivery-timing reviews-sortby">
+                            
+                            <ul>
+                                <li>
+                                    <a href="#" class="reviews-sortby-active">
+                                        <span>Today :</span>
+                                        {% if current_day_opening_hrs %}
+                                            {% for hour in current_day_opening_hrs %}
+                                                {% if hour.is_closed %}
+                                                Closed
+                                                {% else %}
+                                                {{hour.from_hour}} - {{hour.to_hour}} &nbsp;                                                 
+                                                {% endif %}
+                                            {% endfor %}<i class="icon-chevron-small-down"></i>
+                                        {% endif %}
+                                        
+                                        
+                                    </a>
+                                    
+                                    <ul class="delivery-dropdown">
+                                        {% for hour in opening_hrs %}
+                                            {% if hour.is_closed %}
+                                            <li><a href="#"><span class="opend-day">{{hour.get_day_display}}</span> <span class="opend-time close-day"><small>:</small>Closed</span></a>
+                                            {% else %}
+                                            <li><a href="#"><span class="opend-day">{{hour.get_day_display}}</span> <span class="opend-time"><small>:</small> {{hour.from_hour}} - {{hour.to_hour}}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {% endif %}
+
+                    </div>
+                </div>
+                <!-- Column End -->
+            </div>
+            <!-- Row End -->
+        </div>
+        <!-- Container End -->
+    </div>
+
+    <div class="page-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12 sticky-sidebar">
+                    <div class="filter-toggle">
+                        <span class="filter-toggle-text">Categories By</span><i class="icon-chevron-down"></i>
+                    </div>
+                    <div class="filter-wrapper">
+                        <div class="categories-menu">
+                            <h6><i class="icon-restaurant_menu"></i>Categories</h6>
+                            <ul class="menu-list">
+                                {% for category in vendor_categories %}
+                                    <li class="active"><a href="#" class="menu-category-link text-uppercase"> {{category.category_name}} </a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-9 col-md-9 col-sm-8 col-xs-12">
+                    <div class="tabs-holder horizontal">
+                        <ul class="stickynav-tabs nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#home"><i class="icon- icon-room_service"></i>Menu</a></li>
+                            
+                        </ul>
+                        <div class="tab-content">
+                            <div id="home" class="tab-pane in active">
+                                <div class="menu-itam-holder">
+                                    
+                                    <div id="menu-item-list-6272" class="menu-itam-list">
+                                        
+                                        {% for category in vendor_categories %}
+                                        <div class="element-title" id="menu-category-2">
+                                            <h5 class="text-color">{{category.category_name}}</h5>
+                                            <span>{{category.description}}</span>
+                                        </div>
+                                        <ul>
+                                            {% for food_item in category.food_items.all %}
+                                            <li>
+                                                <div class="image-holder"><img src="{{food_item.food_image.url}}" alt=""></div>
+                                                <div class="text-holder">
+                                                    <h6>{{food_item.food_title}}</h6>
+                                                    <span>{{food_item.description}}</span>
+                                                </div>
+                                                <div class="price-holder">
+                                                    <span class="price">RS {{food_item.price}}</span>
+                                                    <a href="#" data-url="{% url 'add_to_cart' food_item.id %}" class="add-to-cart" data-id={{food_item.id}} style="margin-right: 28px;"><i class="icon-plus4 text-color"></i></a>
+                                                    <label id="qty-{{food_item.id}}">0</label>
+                                                    <a href="#" data-url="{% url 'decrease_cart' food_item.id %}" class="remove-from-cart" data-id={{food_item.id}} ><i class="icon-minus text-color"></i></a>
+                                                    <span id="add-menu-loader-10"></span>
+                                                </div>
+                                            </li>
+                                            {% endfor %}
+                                          
+                                        </ul>
+                                        {% endfor %}
+                                        
+                                    </div>
+
+                                    {% for item in cart_items %}
+                                        <span id="qty-{{item.fooditem.id}}" class="item-qty d-none" data-qty="{{item.quantity}}" ></span>
+                                    {% endfor %}
+
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

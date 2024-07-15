@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="main-section pt-5">
+    
+    <div class="page-section">
+        <div class="container">
+            <div class="row">
+               
+                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
+                    <div class="tabs-holder horizontal">
+                        <ul class="stickynav-tabs nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#home"><i class="fa fa-shopping-cart text-danger"></i>REVIEW BILLING ADDRESS</a></li>
+                            
+                        </ul>
+                        <div class="tab-content mt-2">
+                            <div id="home" class="tab-pane in active">
+                                <div class="menu-itam-holder">
+                                    
+
+                                    <div id="menu-item-list-6272" class="menu-itam-list">
+                                        
+                                        <div class="billing-address">
+                                            <div>
+                                                <b>{{order.name}}</b>
+                                            </div>
+                                            <div>
+                                                {{order.address}}
+                                            </div>
+                                            <div>
+                                                {{order.city}} - {{order.pin_code}}
+                                            </div>
+                                            <div>
+                                                {{order.state}},{{order.country}}
+                                            </div>
+                                            <div>
+                                               <b>Phone</b> {{order.phone}}
+                                            </div>
+                                            <div>
+                                                <b>Email</b> {{order.email}}
+                                             </div>
+                                            <div>
+                                                <b>Payment</b>{{order.payment_method}}
+                                            </div>
+                                            <br>
+                                            <div><a href="{% url 'checkout' %}" class="btn btn-outline-primary" >Edit</a></div><br>
+                                        </div>
+                                     
+                                    </div>
+
+                    
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <!-- your order section -->
+
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                    <div class="tabs-holder horizontal">
+                        <ul class="stickynav-tabs nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#home"><i class="icon- icon-room_service"></i>Your Order</a></li>
+                            
+                        </ul>
+                        <div class="tab-content">
+                            <div id="home" class="tab-pane in active">
+                                <div class="menu-itam-holder">
+                                    <div>
+
+
+                                   
+                                    
+                                    <table class="table" style="border: none;">
+                                        <tbody>
+                                            {% for item in cart_items %}
+                                            <tr>
+                                                <td><img src="{{item.fooditem.food_image.url}}" width="40" alt="Food Image"></td>
+                                                <td style="line-height: 20px; line-break: auto;"><b>{{item.fooditem}}</b></td>
+                                                <td>{{item.quantity}}</td>
+                                                <td style="line-height: 20px; line-break: auto;">Rs . {{item.fooditem.price}}</td>
+                                            </tr>
+
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+
+                                    <ul>
+                                        <li style="list-style-type: none;" >
+                                            Subtotal
+                                            <span class="price float-right" >
+                                                <span id="subtotal">{{sub_total}}</span> RS
+                                            </span>
+                                            
+                                        </li>
+                                        {% if taxes_list|length %}
+                                            {% for taxes in taxes_list %}
+                                                <li style="list-style-type: none;" >
+                                                        {{taxes.type}}<small>({{taxes.per}}%)</small>
+                                                        <span class="price float-right" style="margin-left: 40px;">
+                                                            <span id="tax-{{taxes.type}}">{{taxes.tax_amount}}</span> RS
+                                                        </span><br>
+                                                </li>
+                                            {% endfor %}
+                                        {% endif %}
+                                        <li style="list-style-type: none; font-weight: 600;" >
+                                            Total
+                                            <span class="price float-right" >
+                                                <span id="total" >{{grand_total}}</span> RS
+                                            </span>
+                                            
+                                        </li>
+                                        <a href="{% url 'checkout' %}"  id="rzp-pay-btn" style="border: 1px solid black;" class="btn btn-outline w-100 p-2 mt-3" style="font-size: small;" ><img width="100" src="{% static 'images/razorpay_logo.png' %}" ></a>
+                                                  
+                                    </ul>
+                                </div>
+                                    
+
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+var options = {
+    "key": "{{RZP_KEY_ID}}", // Enter the Key ID generated from the Dashboard
+    "amount": "{{rzp_obj.amount}}", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    "currency": "{{rzp_obj.currency}}",
+    "name": "FoodOnline", //your business name
+    "description": "Market place for vendors",
+    "order_id": "{{rzp_obj.id}}", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+    "handler": function (response){
+        console.log("response is ",response)
+        alert(response.razorpay_payment_id);
+        alert(response.razorpay_order_id);
+        alert(response.razorpay_signature)
+    },
+    "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information, especially their phone number
+        "name": "{{order.name}}", //your customer's name
+        "email": "{{order.email}}", 
+        "contact": "{{order.phone}}"  //Provide the customer's phone number for better conversion rates 
+    },
+    "notes": {
+        "address": "Razorpay Corporate Office"
+    },
+    "theme": {
+        "color": "#3399cc"
+    }
+};
+var rzp1 = new Razorpay(options);
+rzp1.on('payment.failed', function (response){
+        alert(response.error.code);
+        alert(response.error.description);
+        alert(response.error.source);
+        alert(response.error.step);
+        alert(response.error.reason);
+        alert(response.error.metadata.order_id);
+        alert(response.error.metadata.payment_id);
+});
+document.getElementById('rzp-pay-btn').onclick = function(e){
+    console.log("options is ",options)
+    console.log("payment ************ => ")
+    rzp1.open();
+    console.log("after rzp1.open()")
+    e.preventDefault();
+}
+</script>
+{% endblock %}
+
+

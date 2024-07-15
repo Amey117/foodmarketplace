@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="main-section pt-5">
+    
+    <div class="page-section">
+        <div class="container">
+            <div class="row">
+               
+                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
+                    <div class="tabs-holder horizontal">
+                        <ul class="stickynav-tabs nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#home"><i class="fa fa-shopping-cart text-danger"></i>Cart Items</a></li>
+                            
+                        </ul>
+                        <div class="tab-content mt-2">
+                            <div id="home" class="tab-pane in active">
+                                <div class="menu-itam-holder">
+                                    
+                                    <div id="empty-cart" style="display: none;" class="text-center p-5">
+                                        <h4>Your cart is empty</h4>
+                                    </div>  
+
+                                    <div id="menu-item-list-6272" class="menu-itam-list">
+                                        
+                                        <ul>
+                                            {% if cart_items %}
+                                            {% for cart_item in cart_items %}
+                                            <li id="cart-item-{{cart_item.id}}">
+                                                <div class="image-holder"><img src="{{cart_item.fooditem.food_image.url}}" alt=""></div>
+                                                <div class="text-holder">
+                                                    <h6>{{cart_item.fooditem.food_title}}</h6>
+                                                    <span>{{cart_item.fooditem.description}}</span>
+                                                    <a href="{% url 'vendor_details' cart_item.fooditem.vendor.vendor_slug %}"  class="badge badge-warning" style="cursor: pointer;" >{{cart_item.fooditem.vendor}}</a>
+                                                </div>
+                                                <div class="price-holder">
+                                                    <span class="price">RS {{cart_item.fooditem.price}}</span>
+                                                    <a href="#" data-url="{% url 'add_to_cart' cart_item.fooditem.id %}" class="add-to-cart" data-id={{cart_item.fooditem.id}} style="margin-right: 28px;"><i class="icon-plus4 text-color"></i></a>
+                                                    <label id="qty-{{cart_item.fooditem.id}}">0</label>
+                                                    <a href="#" data-url="{% url 'decrease_cart' cart_item.fooditem.id %}" class="remove-from-cart" data-id={{cart_item.fooditem.id}} data-cartid="{{cart_item.id}}" ><i class="icon-minus text-color"></i></a>
+                                                    <span id="add-menu-loader-10"></span>
+                                                    <a href="#" data-url="{% url 'delete_cart' cart_item.id %}" class="delete-cart" data-id="{{cart_item.id}}"  style="margin-right: 28px;"><i class="icon-delete text-color"></i></a>
+                                                    
+                                                </div>
+                                            </li>
+                                            {% endfor %}
+                                            {% else %}
+                                            <div class="text-center p-5">
+                                                <h4>Your cart is empty</h4>
+                                            </div>  
+                                            {% endif %}
+                                        </ul>
+
+                                        
+                                        
+                                    </div>
+
+                                    {% for item in cart_items %}
+                                        <span id="qty-{{item.fooditem.id}}" class="item-qty d-none" data-qty="{{item.quantity}}" ></span>
+                                    {% endfor %}
+
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <!-- your order section -->
+
+                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                    <div class="tabs-holder horizontal">
+                        <ul class="stickynav-tabs nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#home"><i class="icon- icon-room_service"></i>Your Order</a></li>
+                            
+                        </ul>
+                        <div class="tab-content">
+                            <div id="home" class="tab-pane in active">
+                                <div class="menu-itam-holder">
+                                    
+                                    <ul>
+                                        <li style="list-style-type: none;" >
+                                            Subtotal
+                                            <span class="price float-right" >
+                                                <span id="subtotal">{{sub_total}}</span> RS
+                                            </span>
+                                            
+                                        </li>
+                                        {% if taxes_list|length %}
+                                            {% for taxes in taxes_list %}
+                                                <li style="list-style-type: none;" >
+                                                        {{taxes.type}}<small>({{taxes.per}}%)</small>
+                                                        <span class="price float-right" style="margin-left: 40px;">
+                                                            <span id="tax-{{taxes.type}}">{{taxes.tax_amount}}</span> RS
+                                                        </span><br>
+                                                </li>
+                                            {% endfor %}
+                                        {% endif %}
+                                        <li style="list-style-type: none; font-weight: 600;" >
+                                            Total
+                                            <span class="price float-right" >
+                                                <span id="total" >{{grand_total}}</span> RS
+                                            </span>
+                                            
+                                        </li>
+                                        <a href="{% url 'checkout' %}" class="btn btn-danger w-100 p-2 mt-3" style="font-size: small;" >PROCEED TO CHECKOUT</a>
+                                                             
+                                    </ul>
+                                    
+
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="main-section">
+        {% include 'includes/cover.html' %}
+        <div class="page-section account-header buyer-logged-in">
+                <div class="container">
+                        <div class="row">
+                                <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+                                        <!-- load the side bar here -->
+                                        {% include 'includes/v_sidebar.html' %}
+                                </div>
+                                <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                                        <div class="user-dashboard loader-holder">
+                                                <div class="user-holder">
+                                                        <h2>Build your food Menu</h2><br>
+                                                        
+                                                        <hr>
+                                                        <button class="btn btn-secondary" onclick="history.back()">back </button><br><br>
+                                                        
+                                                        <h5>Category : <span class="text-uppercase text-success">{{category}}</span></h5><br><br>
+                                                        <!-- Menu builder Form Start -->
+                                                      
+                                                        <table class="table table-hover">
+                            
+                                                            <tbody>
+                                                                {% for food in food_items %}
+                                                                <tr>
+                                                                    <td class="text-left">{{forloop.counter}}</th>
+                                                                    <td class="text-left"><div  style=" background: url({{food.food_image.url}}) no-repeat scroll 0 0 / cover; height: 250px; width: 200px;"></div></td>
+                                                                    <td class="text-left"><a href="" ><p class="mb-0 font-weight-bold" >{{food.food_title}}</p><small class="text-muted" ></small>{{food.description}}</a></td>
+                                                                    <td class="text-left" >{% if food.is_available %}<span class="badge badge-success">Avaliable</span>{% else %}<span class="badge badge-danger">Not Avaliable</span>{% endif %}</td>
+                                                                    <td class="text-left">
+                                                                        <a href="{% url 'edit_food' food.id %}"><i class="fas fa-edit"></i></a>
+                                                                        &nbsp; 
+                                                                        <a href="{% url 'delete_food' food.id %}"><i class="fa-solid fa-trash text-danger"></i></a>
+                                                                        
+                                                                    </td>
+                                                                </tr>
+       
+                                                              {% endfor %}
+                                                              
+                                                            </tbody>
+                                                          </table>
+                
+                                                        <!-- Menu builder End -->
+                                                </div>
+                                        </div>
+                                </div>
+                        </div>
+                </div>
+        </div>
+</div>
+{% include 'includes/alerts.html' %}
+{% endblock %}

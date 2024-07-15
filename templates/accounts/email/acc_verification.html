@@ -1,0 +1,7 @@
+{% autoescape off %}
+
+<h1>hi {{user.username}}</h1>
+<h3 style="color: green;">your activation link</h3>y
+<a style="btn btn-primary" href="http://{{domain}}{% url 'activate' uid64=uid token=token %}">Verification link</a>
+
+{% endautoescape %}

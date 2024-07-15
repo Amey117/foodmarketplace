@@ -1,0 +1,33 @@
+{% load static %}
+<div class="page-section restaurant-detail-image-section" style="background: {% if user_profile.cover_photo  %}url({{user_profile.cover_photo.url}}) {% else %} url({% static 'images/placeholder_user_profile.png' %}) {% endif %} no-repeat scroll 0 0 / cover;">
+        <div class="container" >
+                <!-- Row Start -->
+                <div class="row">
+                        <!-- Column Start -->
+                         <h3>Text in customer->cover.html</h3>
+                         <!-- user_profile -->
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                <div class="company-info-detail">
+                                        <div class="company-info">
+                                                <div class="img-holder">
+                                                        <figure>
+                                                                <img src="{% if user_profile.profile_picture %}{{user_profile.profile_picture.url}}{% else %}{% static 'images/placeholder_user_profile.png' %}{% endif %}"
+                                                                alt="no photo found" alt="">
+                                                        </figure>
+                                                </div>
+            
+                                                <div class="text-holder">
+                                                        <span class="restaurant-title">{{user.first_name}} {{user.last_name}}</span>
+                                                        <div class="text">
+                                                                <i class="icon-location"></i>
+                                                                <p>{{user_profile.address}} , &nbsp; {{user_profile.city}} {{user_profile.state}}</p>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                </div>
+                        </div>
+                        <!-- Column End -->
+                </div>
+                <!-- Row End -->
+            </div>
+</div>
