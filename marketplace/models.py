@@ -10,6 +10,13 @@ class Cart(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateField(auto_now_add=True)
 
+    @classmethod
+    def clear_cart(cls,user):
+        # this functions delete cart elements
+        cart_items = Cart.objects.filter(user=user)
+        cart_items.delete()
+        
+
     def __str__(self) -> str:
         return self.user.first_name
     
