@@ -12,6 +12,7 @@ from foodonline.settings import STRIPE_PUBLISHABLE_KEY,STRIPE_SECRET_KEY
 from marketplace.context_processors import get_cart_amount
 from marketplace.models import Cart
 from accounts.models import User
+from accounts.utils import send_notification
 from .models import Order,Payment,OrderedFood
 from .forms import OrderForm
 from .utils import generate_order_no
@@ -40,7 +41,6 @@ def place_order(request):
     # we will make entry in db with the status as initiated
     data_to_save = dict()
     cart_details = get_cart_amount(request)
-    print("url for success is ************",request.build_absolute_uri(reverse('payment_success')))
   
     if request.method == 'POST':
         input_data = request.POST
@@ -83,7 +83,7 @@ def place_order(request):
                 currency='INR',
                 metadata={'food_online_order_id':order.order_number,'food_online_payment_id':payment_object.id},
                 billing_address_collection='required',
-                success_url=request.build_absolute_uri(reverse('payment_success')),
+                success_url=request.build_absolute_uri(reverse('payment_success',args=[order.order_number])),
                 cancel_url=request.build_absolute_uri(reverse('payment_cancel'))
             )
             print("checkout_session",checkout_session.id)
@@ -97,8 +97,17 @@ def place_order(request):
         print("**** form errors",order_form.errors())
         return HttpResponse(status=400)
     
-def payment_success(request):
-    return render(request,'orders/success.html')
+def payment_success(request,order_number):
+    Cart.clear_cart(request.user)
+    order = Order.objects.get(order_number=order_number,is_ordered=True)
+    ordered_food = OrderedFood.objects.select_related('order').filter(order__order_number=order_number,order__is_ordered=True)
+    context = {
+        'order':order,
+        'ordered_food':ordered_food,
+        'subtotal':order.total - order.total_tax,
+
+    }
+    return render(request,'orders/order_complete.html',context)
 
 def payment_cancel(request):
     return render(request,'orders/cancel.html')
@@ -119,6 +128,7 @@ def update_order_status(order_id,status):
 def create_ordered_food(order,payment):
     user = get_object_or_404(User,pk=order.user_id)
     cart_items = Cart.objects.filter(user=user).order_by('created_at')
+    vendor_emails = set()
     for items in cart_items:
         OrderedFood.objects.create(
             user=user,
@@ -128,9 +138,16 @@ def create_ordered_food(order,payment):
             quantity = items.quantity,
             amount = items.fooditem.price * items.quantity
         )
-    Cart.clear_cart(user)
+        vendor_emails.add(items.fooditem.vendor.user.email)
+    vendor_email_list = list(vendor_emails)
+    # sending email to vendor and customer
+    order_food = OrderedFood.objects.filter(order=order)
+
+    send_notification(subject="Thank you for ordering form food online",email=[order.email],context={"customer":user,"order":order},template='orders/cust_order_confirmation.html')
     
-    print("************ order food created ********")
+    for vendor_email in vendor_email_list:
+        send_notification(subject="You have received new order",email=[vendor_email],context={"customer":user,'vendor_email':vendor_email,"order_food":order_food},template='orders/vendor_order_confirmation.html')
+    Cart.clear_cart(user)
 
 @method_decorator(csrf_exempt, name="dispatch")
 class StripeWebhookView(View):
@@ -172,44 +189,3 @@ class StripeWebhookView(View):
             print('Error verifying webhook signature: {}'.format(str(e)))
             return HttpResponse(status=400)
 
-
-# @csrf_exempt
-# def stripe_webhook(request):
-#   payload = request.body
-#   event = None
-#   print("********** web hook called **********")
-
-#   try:
-#     endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
-#     sig_header = request.META["HTTP_STRIPE_SIGNATURE"]
-#     event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
-#     order_number = event.data.metadata['food_online_order_id']
-#     print("inside webhook event type is ",event.type)
-#     print("*** inside webhook *** order number ",order_number)
-#     order = get_object_or_404(Order,order_number=order_number)
-#     if event.type == 'payment_intent.succeeded':
-#         order.status = "completed"   
-#     if event.type == 'payment_intent.payment_failed' or event.type == 'payment_intent.canceled':
-#        order.status = "cancelled"
-#     order.save()
-       
-#   except ValueError as e:
-#     # Invalid payload
-#     return HttpResponse(status=400)
-#   except stripe.error.SignatureVerificationError as e:
-#     # Invalid signature
-#     print('Error verifying webhook signature: {}'.format(str(e)))
-#     return HttpResponse(status=400)
-    
-    
-
-
-#   # Handle the event
-  
-     
-     
-    
-#     # Then define and call a method to handle the successful payment intent.
-#     # handle_payment_intent_succeeded(payment_intent)
-
-  

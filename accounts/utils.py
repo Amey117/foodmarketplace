@@ -68,6 +68,14 @@ def send_vendor_onboard_notification(subject,comment,vendor):
     mail.send()
 
 
+def send_notification(email,subject,context,template):
+    mail_subject = subject
+    message = render_to_string(template,context)
+    to_email = email
+    mail = EmailMultiAlternatives(mail_subject,from_email=settings.DEFAULT_FROM_EMAIL,to=to_email)
+    mail.attach_alternative(message, "text/html")
+    mail.send()
+
 
 # this is a custom decorater to restrict the vendor from accessing customer page and vice versa
 
