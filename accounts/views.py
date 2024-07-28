@@ -10,6 +10,7 @@ from .forms import userRegistrationForm
 from .models import User, UserProfile
 from .utils import detech_user,send_verification_email,send_password_reset_link
 from vendor.models import Vendor
+from orders.models import Order
 from .utils import check_role_customer,check_role_vendor
 # Create your views here.
 
@@ -149,7 +150,13 @@ def vendor_dashboard(request):
 @login_required(login_url="login")
 @user_passes_test(check_role_customer)
 def customer_dashboard(request):
-    return render(request, "accounts/customer_dashboard.html")
+    cust_orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    recent_orders = cust_orders[:5]
+    context = {
+        'orders':cust_orders,
+        'recent_orders':recent_orders
+    }
+    return render(request, "accounts/customer_dashboard.html",context)
 
 
 @login_required(login_url="login")

@@ -1,6 +1,7 @@
 from django.shortcuts import render,get_object_or_404,redirect
 from accounts.forms import UserProfileForm,UserInfoForm
 from accounts.models import UserProfile
+from orders.models import Order,OrderedFood
 from django.contrib import messages
 # Create your views here.
 
@@ -28,3 +29,21 @@ def cprofile(request):
         'user_profile':user_profile_instance
     }
     return render(request,'customers/cprofile.html',context)
+
+
+def my_orders(request):
+    my_orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    context = {
+        'orders':my_orders
+    }
+    return render(request,'customers/myorders.html',context)
+
+def order_details(request,order_number):
+    order = Order.objects.get(order_number=order_number)
+    ordered_food = OrderedFood.objects.filter(order=order)
+    context = {
+        'order':order,
+        'ordered_food':ordered_food,
+        'subtotal':order.total - order.total_tax
+    }
+    return render(request,'customers/order_detail.html',context)
